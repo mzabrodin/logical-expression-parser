@@ -1,0 +1,14 @@
+not_operator = { "NOT" | "not" | "!" }
+or_operator  = { "OR" | "or" | "|" }
+
+operator = {
+    or_operator
+}
+
+WHITESPACE = _{ "\n" | "\t" | " " }
+
+identifier = @{ ASCII_ALPHA_UPPER }
+term       =  { "(" ~ expression ~ ")" | identifier | not_operator ~ term }
+expression =  { term ~ (operator ~ term)* }
+
+file = { SOI ~ expression ~ EOI }
