@@ -1,3 +1,5 @@
+use crate::parser::Rule;
+use pest::iterators::Pair;
 use std::collections::HashMap;
 
 #[derive(Debug)]
@@ -29,6 +31,94 @@ impl Expression {
             Expression::Xnor(left, right) => {
                 !(left.evaluate(variables) ^ right.evaluate(variables))
             }
+        }
+    }
+
+    pub fn ast(pair: Pair<Rule>) -> Self {
+        match pair.as_rule() {
+            Rule::identifier => Self::Identifier(pair.as_str().chars().next().unwrap()),
+
+            Rule::term => {
+                let mut inner = pair.into_inner();
+                let mut not_count = 0;
+
+                let mut next_pair = inner.next().unwrap();
+                while next_pair.as_rule() == Rule::not_operator {
+                    not_count += 1;
+                    next_pair = inner.next().unwrap();
+                }
+
+                let mut expression: Expression = match next_pair.as_rule() {
+                    Rule::identifier => {
+                        Self::Identifier(next_pair.as_str().chars().next().unwrap())
+                    }
+
+                    Rule::left_parenthesis => {
+                        let inner_expression = inner.next().unwrap();
+                        Self::ast(inner_expression)
+                    }
+
+                    _ => unreachable!(),
+                };
+
+                if not_count % 2 != 0 {
+                    expression = Self::Not(Box::new(expression));
+                }
+
+                expression
+            }
+
+            Rule::and_clause => {
+                let mut inner = pair.into_inner();
+                let mut left = Self::ast(inner.next().unwrap());
+
+                while let Some(operator) = inner.next() {
+                    let right = Self::ast(inner.next().unwrap());
+                    left = match operator.as_rule() {
+                        Rule::and_operator => Self::And(Box::new(left), Box::new(right)),
+                        Rule::nand_operator => Self::Nand(Box::new(left), Box::new(right)),
+                        _ => unreachable!(),
+                    };
+                }
+
+                left
+            }
+
+            Rule::xor_clause => {
+                let mut inner = pair.into_inner();
+                let mut left = Self::ast(inner.next().unwrap());
+
+                while let Some(operator) = inner.next() {
+                    let right = Expression::ast(inner.next().unwrap());
+                    left = match operator.as_rule() {
+                        Rule::xor_operator => Self::Xor(Box::new(left), Box::new(right)),
+                        Rule::xnor_operator => Self::Xnor(Box::new(left), Box::new(right)),
+                        _ => unreachable!(),
+                    };
+                }
+
+                left
+            }
+
+            Rule::expression => {
+                let mut inner = pair.into_inner();
+                let mut left = Self::ast(inner.next().unwrap());
+
+                while let Some(operator) = inner.next() {
+                    let right = Self::ast(inner.next().unwrap());
+                    left = match operator.as_rule() {
+                        Rule::or_operator => Self::Or(Box::new(left), Box::new(right)),
+                        Rule::nor_operator => Self::Nor(Box::new(left), Box::new(right)),
+                        _ => unreachable!(),
+                    };
+                }
+
+                left
+            }
+
+            Rule::file => Self::ast(pair.into_inner().next().unwrap()),
+
+            _ => unreachable!(),
         }
     }
 }

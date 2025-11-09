@@ -1,7 +1,8 @@
+use logical_expression_parser::ast::Expression;
 use logical_expression_parser::parser::{ParserError, parse};
 
 fn main() -> Result<(), ParserError> {
-    let input = "A OR B";
+    let input = "A OR !!!B";
 
     let expression_str = parse(input)?
         .next()
@@ -11,7 +12,12 @@ fn main() -> Result<(), ParserError> {
         .unwrap()
         .as_str();
 
-    println!("{}", expression_str);
+    println!("{:#?}", expression_str);
+
+    let pair = parse(input)?.next().unwrap();
+    let ast = Expression::ast(pair);
+
+    println!("{:#?}", ast);
 
     Ok(())
 }
