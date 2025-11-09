@@ -1,5 +1,5 @@
 use anyhow::{Result, anyhow};
-use logical_expression_parser::parse;
+use logical_expression_parser::parser::parse;
 
 #[test]
 fn test_unexpected_command() -> Result<()> {
@@ -55,7 +55,7 @@ fn test_simple_or() -> Result<()> {
         .ok_or_else(|| anyhow!("No expression"))?;
     assert_eq!(
         expression_pair.as_rule(),
-        logical_expression_parser::Rule::expression
+        logical_expression_parser::parser::Rule::expression
     );
     assert_eq!(expression_pair.as_str(), input);
 

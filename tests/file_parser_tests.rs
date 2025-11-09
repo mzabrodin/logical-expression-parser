@@ -1,5 +1,5 @@
 use anyhow::{Result, anyhow};
-use logical_expression_parser::parse;
+use logical_expression_parser::parser::parse;
 
 #[test]
 fn test_empty_input() -> Result<()> {
@@ -18,7 +18,10 @@ fn test_file() -> Result<()> {
         .next()
         .ok_or_else(|| anyhow!("No file pair"))?;
 
-    assert_eq!(file_pair.as_rule(), logical_expression_parser::Rule::file);
+    assert_eq!(
+        file_pair.as_rule(),
+        logical_expression_parser::parser::Rule::file
+    );
     assert_eq!(file_pair.as_str(), input);
     assert_eq!(file_pair.as_span().start(), 0);
     assert_eq!(file_pair.as_span().end(), input.len());

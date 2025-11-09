@@ -1,4 +1,4 @@
-use logical_expression_parser::{ParserError, parse};
+use logical_expression_parser::parser::{ParserError, parse};
 
 fn main() -> Result<(), ParserError> {
     let input = "A OR B";
