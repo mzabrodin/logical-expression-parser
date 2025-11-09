@@ -3,7 +3,7 @@ use logical_expression_parser::parse;
 
 #[test]
 fn test_unexpected_command() -> Result<()> {
-    let input = "(A OR B) AND C";
+    let input = "(A OR B) And C";
     let file_pair = parse(input);
     assert!(file_pair.is_err());
 
