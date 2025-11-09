@@ -1,6 +1,6 @@
 use crate::parser::Rule;
 use pest::iterators::Pair;
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
 
 #[derive(Debug)]
 pub enum Expression {
@@ -119,6 +119,26 @@ impl Expression {
             Rule::file => Self::ast(pair.into_inner().next().unwrap()),
 
             _ => unreachable!(),
+        }
+    }
+
+    pub fn variables(&self, variables: &mut HashSet<char>) {
+        match self {
+            Expression::Identifier(ident) => {
+                variables.insert(*ident);
+            }
+            Expression::Not(expr) => {
+                expr.variables(variables);
+            }
+            Expression::And(left, right)
+            | Expression::Nand(left, right)
+            | Expression::Or(left, right)
+            | Expression::Nor(left, right)
+            | Expression::Xor(left, right)
+            | Expression::Xnor(left, right) => {
+                left.variables(variables);
+                right.variables(variables);
+            }
         }
     }
 }
