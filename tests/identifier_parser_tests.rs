@@ -20,8 +20,8 @@ fn test_identifier_invalid_lowercase() -> Result<()> {
 
 #[test]
 fn test_identifier_only_single_character() -> Result<()> {
-    let pairs = Grammar::parse(Rule::identifier, "VAR")?;
-    assert!(pairs.as_str().starts_with("V"));
+    let pairs = Grammar::parse(Rule::identifier, "VAR");
+    assert!(pairs.is_err());
 
     Ok(())
 }

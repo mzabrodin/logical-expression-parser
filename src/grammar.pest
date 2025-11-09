@@ -11,7 +11,7 @@ xnor_operator = { "XNOR" | "xnor" | "!^" }
 left_parenthesis  = { "(" }
 right_parenthesis = { ")" }
 
-identifier = @{ ASCII_ALPHA_UPPER }
+identifier = @{ ASCII_ALPHA_UPPER ~ !(ASCII_ALPHA_UPPER) }
 
 term       = { not_operator* ~ (identifier | left_parenthesis ~ expression ~ right_parenthesis) }
 xor_clause = { term ~ ((xor_operator | xnor_operator) ~ term)* }
