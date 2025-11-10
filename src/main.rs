@@ -1,9 +1,9 @@
 use logical_expression_parser::ast::Expression;
 use logical_expression_parser::parser::{ParserError, parse};
-use logical_expression_parser::truth_table::{TruthTable, TruthTableRow};
+use logical_expression_parser::truth_table::TruthTable;
 
 fn main() -> Result<(), ParserError> {
-    let input = "(A & B) | C";
+    let input = "(A NOR B) & C";
 
     let expression_str = parse(input)?
         .next()
@@ -20,21 +20,8 @@ fn main() -> Result<(), ParserError> {
 
     println!("{:#?}", ast);
 
-    let table = TruthTable {
-        variables: vec!['A', 'B'],
-        rows: vec![
-            TruthTableRow {
-                values: vec![false, false],
-                result: false,
-            },
-            TruthTableRow {
-                values: vec![true, false],
-                result: true,
-            },
-        ],
-    };
-
-    println!("{}", table);
+    let truth_table = TruthTable::from(&ast);
+    println!("{}", truth_table);
 
     Ok(())
 }
