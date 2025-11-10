@@ -3,12 +3,13 @@ name = "logical-expression-parser"
 version = "0.1.0"
 edition = "2024"
 description = "This crate parses strings of logical expression using `pest` crate. It returns a truth table showing all input combinations with corresponding output results."
+authors = ["Maksym Zabrodin <m.d.zabrodin@gmail.com>"]
+license = "MIT"
+repository = "https://github.com/mzabrodin/logical-expression-parser"
 
 [dependencies]
-clap = "4.5.51"
+clap = { version = "4.5.51", features = ["derive"] }
 pest = "2.8.3"
 pest_derive = "2.8.3"
 thiserror = "2.0.17"
-
-[dev-dependencies]
 anyhow = "1.0.100"
