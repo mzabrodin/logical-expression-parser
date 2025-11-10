@@ -43,27 +43,3 @@ The resulting truth table is going to be
 | 1 | 0 | 1 | 1      |
 | 0 | 1 | 1 | 1      |
 | 1 | 1 | 1 | 1      |
-
-
-## Usage
-
-```rust
-use logical_expression_parser::{ParserError, parse};
-
-fn main() -> Result<(), ParserError> {
-    let input = "A OR B";
-
-    let expression_str = parse(input)?
-        .next()
-        .unwrap()
-        .into_inner()
-        .next()
-        .unwrap()
-        .as_str();
-
-    println!("{}", expression_str);
-    // output: "A OR B"
-
-    Ok(())
-}
-```
