@@ -1,4 +1,4 @@
-use logical_expression_parser::parser::{Grammar, Rule};
+use logical_expression_pest_parser::parser::{Grammar, Rule};
 use pest::Parser;
 
 pub fn test_if_valid(rule: Rule, data: &[&str]) -> anyhow::Result<()> {

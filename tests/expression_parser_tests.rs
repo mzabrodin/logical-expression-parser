@@ -1,5 +1,5 @@
 use anyhow::Result;
-use logical_expression_parser::parser::Rule;
+use logical_expression_pest_parser::parser::Rule;
 mod common;
 
 #[test]

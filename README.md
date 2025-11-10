@@ -1,4 +1,4 @@
-# Logical Expression Parser
+# Logical Expression Pest Parser
 
 This crate parses strings of logical expression using `pest` crate, such as:
 > (A AND B) OR (NOT (A XOR C))

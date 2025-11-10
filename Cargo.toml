@@ -1,5 +1,5 @@
 [package]
-name = "logical-expression-parser"
+name = "logical-expression-pest-parser"
 version = "0.1.0"
 edition = "2024"
 description = "This crate parses strings of logical expression using `pest` crate. It returns a truth table showing all input combinations with corresponding output results."

@@ -1,8 +1,8 @@
 use anyhow::{Context, Result};
 use clap::{Parser, Subcommand};
-use logical_expression_parser::ast::Expression;
-use logical_expression_parser::parser::{Rule, parse};
-use logical_expression_parser::truth_table::TruthTable;
+use logical_expression_pest_parser::ast::Expression;
+use logical_expression_pest_parser::parser::{Rule, parse};
+use logical_expression_pest_parser::truth_table::TruthTable;
 use std::fs;
 use std::path::PathBuf;
 

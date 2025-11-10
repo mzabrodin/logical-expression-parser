@@ -1,5 +1,5 @@
 use anyhow::Result;
-use logical_expression_parser::parser::parse;
+use logical_expression_pest_parser::parser::parse;
 
 #[test]
 fn test_empty_input() -> Result<()> {
@@ -17,7 +17,7 @@ fn test_file_valid() -> Result<()> {
 
     assert_eq!(
         result.as_rule(),
-        logical_expression_parser::parser::Rule::file
+        logical_expression_pest_parser::parser::Rule::file
     );
     assert_eq!(result.as_str(), input);
 
