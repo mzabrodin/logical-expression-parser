@@ -122,13 +122,22 @@ impl Expression {
         }
     }
 
-    pub fn variables(&self, variables: &mut HashSet<char>) {
+    pub fn variables(&self) -> Vec<char> {
+        let mut variables = HashSet::new();
+        self.all_variables_set(&mut variables);
+
+        let mut variables_vec: Vec<char> = variables.into_iter().collect();
+        variables_vec.sort();
+        variables_vec
+    }
+
+    fn all_variables_set(&self, variables: &mut HashSet<char>) {
         match self {
             Expression::Identifier(ident) => {
                 variables.insert(*ident);
             }
             Expression::Not(expr) => {
-                expr.variables(variables);
+                expr.all_variables_set(variables);
             }
             Expression::And(left, right)
             | Expression::Nand(left, right)
@@ -136,8 +145,8 @@ impl Expression {
             | Expression::Nor(left, right)
             | Expression::Xor(left, right)
             | Expression::Xnor(left, right) => {
-                left.variables(variables);
-                right.variables(variables);
+                left.all_variables_set(variables);
+                right.all_variables_set(variables);
             }
         }
     }
