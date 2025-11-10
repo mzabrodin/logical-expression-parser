@@ -12,7 +12,7 @@ fn test_empty_input() -> Result<()> {
 
 #[test]
 fn test_file_valid() -> Result<()> {
-    let input = "(X NOR U) OR !(A AND B)";
+    let input = "(X NOR U) OR !(A AND B)\n";
     let result = parse(input)?.clone().next().unwrap();
 
     assert_eq!(
@@ -62,7 +62,7 @@ fn test_invalid_command() -> Result<()> {
 
 #[test]
 fn test_nested_parenthesis() -> Result<()> {
-    let input = "A OR (C XNOR (!X OR B) OR C)";
+    let input = "A OR (C XNOR (!X OR B) OR C)\n";
     let result = parse(input)?.next().unwrap();
     assert_eq!(result.as_str(), input);
 

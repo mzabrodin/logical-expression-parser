@@ -1,4 +1,4 @@
-WHITESPACE = _{ " " | "\t" | "\n" | "\r\n" }
+WHITESPACE = _{ " " | "\t" }
 
 not_operator  = { "NOT" | "not" | "!" }
 and_operator  = { "AND" | "and" | "&" }
@@ -18,4 +18,6 @@ xor_clause = { term ~ ((xor_operator | xnor_operator) ~ term)* }
 and_clause = { xor_clause ~ ((and_operator | nand_operator) ~ xor_clause)* }
 expression = { and_clause ~ ((or_operator | nor_operator) ~ and_clause)* }
 
-file = { SOI ~ expression ~ EOI }
+NEWLINE = _{ "\n" | "\r\n" }
+
+file = { SOI ~ expression ~ NEWLINE ~ (expression ~ NEWLINE)* ~ EOI }
