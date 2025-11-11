@@ -1,6 +1,4 @@
-//! # Logic Expression Pest Parser
-//!
-//! This crate provides tools to parse, evaluate and generate truth tables for boolean logic expression.
+#![doc = include_str!("../docs.md")]
 
 /// # Abstract Syntax Tree (AST) Module
 ///

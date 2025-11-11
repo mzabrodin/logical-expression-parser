@@ -1,21 +1,31 @@
 WHITESPACE = _{ " " | "\t" }
 
 not_operator  = { "NOT" | "not" | "!" }
+
 and_operator  = { "AND" | "and" | "&" }
+
 nand_operator = { "NAND" | "nand" | "!&" }
+
 or_operator   = { "OR" | "or" | "|" }
+
 nor_operator  = { "NOR" | "nor" | "!|" }
+
 xor_operator  = { "XOR" | "xor" | "^" }
+
 xnor_operator = { "XNOR" | "xnor" | "!^" }
 
 left_parenthesis  = { "(" }
+
 right_parenthesis = { ")" }
 
 identifier = @{ ASCII_ALPHA_UPPER ~ !(ASCII_ALPHA_UPPER) }
 
 term       = { not_operator* ~ (identifier | left_parenthesis ~ expression ~ right_parenthesis) }
+
 xor_clause = { term ~ ((xor_operator | xnor_operator) ~ term)* }
+
 and_clause = { xor_clause ~ ((and_operator | nand_operator) ~ xor_clause)* }
+
 expression = { and_clause ~ ((or_operator | nor_operator) ~ and_clause)* }
 
 NEWLINE = _{ "\n" | "\r\n" }
