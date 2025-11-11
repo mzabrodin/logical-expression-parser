@@ -6,7 +6,10 @@ use thiserror::Error;
 /// The Pest parser struct.
 ///
 /// The grammar is included directly from the `grammar.pest` file.
+///
+/// # Grammar
 #[derive(Parser)]
+#[doc = include_str!("grammar.pest")]
 #[grammar = "./grammar.pest"]
 pub struct Grammar;
 
