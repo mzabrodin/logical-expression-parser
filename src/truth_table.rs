@@ -2,19 +2,26 @@ use crate::ast::Expression;
 use std::collections::HashMap;
 use std::fmt::{Display, Formatter};
 
+/// Represents a single row in the truth table, containing variable values and the evaluated result.
 #[derive(Debug)]
 pub struct TruthTableRow {
+    /// The specific boolean values for each variable in this row
     pub values: Vec<bool>,
+    /// The evaluated boolean result of the expression for this row.
     pub result: bool,
 }
 
+/// Represents the complete truth table for a given expression, with all possible value combinations and their corresponding results.
 #[derive(Debug)]
 pub struct TruthTable {
+    /// A sorted list of unique variables.
     pub variables: Vec<char>,
+    /// A `Vec` of all `TruthTableRow`s, representing the table's body.
     pub rows: Vec<TruthTableRow>,
 }
 
 impl Display for TruthTableRow {
+    /// Formats a [TruthTableRow] for printing.
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         write!(f, "|")?;
         for &value in &self.values {
@@ -27,6 +34,7 @@ impl Display for TruthTableRow {
 }
 
 impl Display for TruthTable {
+    /// Formats a [TruthTable] for printing.
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         write!(f, "|")?;
         for variable in &self.variables {
@@ -47,8 +55,13 @@ impl Display for TruthTable {
         Ok(())
     }
 }
-
 impl From<&Expression> for TruthTable {
+    /// Creates a `TruthTable`.
+    ///
+    /// It generates a truth table for a given logical expression showing the evaluation result for all possible combinations of its input variables.
+    ///
+    /// # Arguments
+    /// * `expression` - An AST node that represents a parsed logical expression.
     fn from(expression: &Expression) -> Self {
         let variables = expression.variables();
 

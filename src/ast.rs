@@ -2,19 +2,35 @@ use crate::parser::Rule;
 use pest::iterators::Pair;
 use std::collections::{HashMap, HashSet};
 
+/// An AST node that represents a logical expression recursively.
 #[derive(Debug)]
 pub enum Expression {
+    /// A `char` identifier.
     Identifier(char),
+    /// A unary NOT operation.
     Not(Box<Expression>),
+    /// A binary AND operation
     And(Box<Expression>, Box<Expression>),
+    /// A binary NAND operation
     Nand(Box<Expression>, Box<Expression>),
+    /// A binary OR operation
     Or(Box<Expression>, Box<Expression>),
+    /// A binary NOR operation
     Nor(Box<Expression>, Box<Expression>),
+    /// A binary XOR operation
     Xor(Box<Expression>, Box<Expression>),
+    /// A binary XNOR operation
     Xnor(Box<Expression>, Box<Expression>),
 }
 
 impl Expression {
+    /// Evaluates a logical expression with given variables and return boolean.
+    ///
+    /// # Arguments
+    /// * `variables` - `HashMap<char, bool>` that maps an identifier to its boolean value.
+    ///
+    /// # Returns
+    /// A `bool` result of the expression evaluated with given variables.
     pub fn evaluate(&self, variables: &HashMap<char, bool>) -> bool {
         match self {
             Expression::Identifier(iden) => variables.get(iden).cloned().unwrap_or(false),
@@ -34,6 +50,13 @@ impl Expression {
         }
     }
 
+    /// Recursively creates an [Expression] from result of Pest parsing.
+    ///
+    /// # Arguments
+    /// * `pair` - A `Pair<Rule>` from [pest] crate representing a rule from grammar.
+    ///
+    /// # Returns
+    /// The corresponding [Expression] (AST node).
     pub fn ast(pair: Pair<Rule>) -> Self {
         match pair.as_rule() {
             Rule::identifier => Self::Identifier(pair.as_str().chars().next().unwrap()),
@@ -122,6 +145,10 @@ impl Expression {
         }
     }
 
+    /// Collects all unique identifiers from the AST.
+    ///
+    /// # Returns
+    /// A sorted `Vec<char>` of all unique variables.
     pub fn variables(&self) -> Vec<char> {
         let mut variables = HashSet::new();
         self.all_variables_set(&mut variables);
@@ -131,6 +158,10 @@ impl Expression {
         variables_vec
     }
 
+    /// Helper method for recursively collecting identifiers into a set.
+    ///
+    /// # Arguments
+    /// * `variables` - A mutable `HashSet<char>` to insert all found identifier into.
     fn all_variables_set(&self, variables: &mut HashSet<char>) {
         match self {
             Expression::Identifier(ident) => {
