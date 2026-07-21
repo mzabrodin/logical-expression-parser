@@ -18,6 +18,7 @@ left_parenthesis  = { "(" }
 
 right_parenthesis = { ")" }
 
+// A single uppercase ASCII letter, so at most 26 distinct variables per expression.
 identifier = @{ ASCII_ALPHA_UPPER ~ !(ASCII_ALPHA_UPPER) }
 
 term       = { not_operator* ~ (identifier | left_parenthesis ~ expression ~ right_parenthesis) }
