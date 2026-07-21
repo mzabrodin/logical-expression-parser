@@ -1,4 +1,6 @@
 use crate::ast::Expression;
+use comfy_table::Table;
+use comfy_table::presets::ASCII_MARKDOWN;
 use std::collections::HashMap;
 use std::fmt::{Display, Formatter};
 
@@ -20,39 +22,27 @@ pub struct TruthTable {
     pub rows: Vec<TruthTableRow>,
 }
 
-impl Display for TruthTableRow {
-    /// Formats a [TruthTableRow] for printing.
-    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        write!(f, "|")?;
-        for &value in &self.values {
-            write!(f, " {} |", if value { '1' } else { '0' })?;
-        }
-        write!(f, "   {}    |", if self.result { '1' } else { '0' })?;
-
-        Ok(())
-    }
+fn bool_cell(value: bool) -> &'static str {
+    if value { "1" } else { "0" }
 }
 
 impl Display for TruthTable {
-    /// Formats a [TruthTable] for printing.
+    /// Formats a [TruthTable] for printing as a markdown-style table.
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        write!(f, "|")?;
-        for variable in &self.variables {
-            write!(f, " {} |", variable)?;
-        }
-        writeln!(f, " Output |")?;
+        let mut table = Table::new();
+        table.load_preset(ASCII_MARKDOWN);
 
-        write!(f, "|")?;
-        for _ in &self.variables {
-            write!(f, "---|")?;
-        }
-        writeln!(f, "--------|")?;
+        let mut header: Vec<String> = self.variables.iter().map(|v| v.to_string()).collect();
+        header.push("Output".to_string());
+        table.set_header(header);
 
         for row in &self.rows {
-            writeln!(f, "{}", row)?;
+            let mut cells: Vec<&str> = row.values.iter().map(|&v| bool_cell(v)).collect();
+            cells.push(bool_cell(row.result));
+            table.add_row(cells);
         }
 
-        Ok(())
+        write!(f, "{table}")
     }
 }
 impl From<&Expression> for TruthTable {
@@ -69,7 +59,7 @@ impl From<&Expression> for TruthTable {
         let rows_length = if variables_length == 0 {
             0
         } else {
-            2_usize.pow(variables_length as u32)
+            1_usize << variables_length
         };
 
         let mut rows: Vec<TruthTableRow> = Vec::with_capacity(rows_length);
@@ -78,7 +68,7 @@ impl From<&Expression> for TruthTable {
             let mut idens_values = HashMap::with_capacity(variables_length);
 
             for (identifier_index, &identifier) in variables.iter().enumerate() {
-                let value = row_index / 2_usize.pow(identifier_index as u32) % 2 == 1;
+                let value = (row_index >> identifier_index) & 1 == 1;
                 values.push(value);
                 idens_values.insert(identifier, value);
             }
