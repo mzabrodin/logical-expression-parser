@@ -26,7 +26,7 @@ It can handle those logic operators:
 | XOR      | XOR, xor, ^           |
 | XNOR     | XNOR, xnor, !^        |
 
-After parsing, the resulting three is analyzed and converted into an Abstract Syntax Tree.
+After parsing, the resulting tree is analyzed and converted into an Abstract Syntax Tree.
 The next step is to evaluate the logical expression for all possible combinations of input values, allowing the
 generation of a complete truth table.
 
@@ -52,19 +52,18 @@ The resulting truth table is going to be
 
 ```shell
 
-cargo install logical-expression-parser
+cargo install logical-expression-pest-parser
 logical-expression-pest-parser.exe parse -f .\input.txt --ast
 ```
 ---
 #### input.txt
 
-In order to analyze multiple expressions, they must be defined in different lines and there must be an empty line at the end.
+Multiple expressions must be defined on different lines. A newline must follow each expression; if the file's last line is missing, the CLI adds it automatically.
 
 ```text
 A and !B or C
 X !| Y
 (K XOR L) AND M
-
 ```
 ---
 #### Output
@@ -78,14 +77,14 @@ AST: Or(And(Identifier('A'), Not(Identifier('B'))), Identifier('C'))
 
 | A | B | C | Output |
 |---|---|---|--------|
-| 0 | 0 | 0 |   0    |
-| 1 | 0 | 0 |   1    |
-| 0 | 1 | 0 |   0    |
-| 1 | 1 | 0 |   0    |
-| 0 | 0 | 1 |   1    |
-| 1 | 0 | 1 |   1    |
-| 0 | 1 | 1 |   1    |
-| 1 | 1 | 1 |   1    |
+| 0 | 0 | 0 | 0      |
+| 1 | 0 | 0 | 1      |
+| 0 | 1 | 0 | 0      |
+| 1 | 1 | 0 | 0      |
+| 0 | 0 | 1 | 1      |
+| 1 | 0 | 1 | 1      |
+| 0 | 1 | 1 | 1      |
+| 1 | 1 | 1 | 1      |
 
 Expression 2
 Input: "X !| Y"
@@ -94,10 +93,10 @@ AST: Nor(Identifier('X'), Identifier('Y'))
 
 | X | Y | Output |
 |---|---|--------|
-| 0 | 0 |   1    |
-| 1 | 0 |   0    |
-| 0 | 1 |   0    |
-| 1 | 1 |   0    |
+| 0 | 0 | 1      |
+| 1 | 0 | 0      |
+| 0 | 1 | 0      |
+| 1 | 1 | 0      |
 
 Expression 3
 Input: "(K XOR L) AND M"
@@ -106,20 +105,40 @@ AST: And(Xor(Identifier('K'), Identifier('L')), Identifier('M'))
 
 | K | L | M | Output |
 |---|---|---|--------|
-| 0 | 0 | 0 |   0    |
-| 1 | 0 | 0 |   0    |
-| 0 | 1 | 0 |   0    |
-| 1 | 1 | 0 |   0    |
-| 0 | 0 | 1 |   0    |
-| 1 | 0 | 1 |   1    |
-| 0 | 1 | 1 |   1    |
-| 1 | 1 | 1 |   0    |
+| 0 | 0 | 0 | 0      |
+| 1 | 0 | 0 | 0      |
+| 0 | 1 | 0 | 0      |
+| 1 | 1 | 0 | 0      |
+| 0 | 0 | 1 | 0      |
+| 1 | 0 | 1 | 1      |
+| 0 | 1 | 1 | 1      |
+| 1 | 1 | 1 | 0      |
 ```
 ---
 #### Use this command for help
 ```shell
 
 logical-expression-pest-parser.exe help
+```
+
+## Library usage
+
+The parsing/evaluation logic is also available as a library:
+
+```rust
+use logical_expression_pest_parser::parse_expression;
+
+let expr = parse_expression("A AND !B\n")?;
+```
+
+`parse_expression` returns the [`Expression`](https://docs.rs/logical-expression-pest-parser/latest/logical_expression_pest_parser/ast/enum.Expression.html) AST for the first expression in the input, which can then be evaluated directly (`expr.evaluate(&variables)`) or turned into a [`TruthTable`](https://docs.rs/logical-expression-pest-parser/latest/logical_expression_pest_parser/truth_table/struct.TruthTable.html) via `TruthTable::from(&expr)`.
+
+For multi-line input, `parse_expressions` returns every `(source_line, Expression)` pair instead of just the first:
+
+```rust
+use logical_expression_pest_parser::parse_expressions;
+
+let expressions = parse_expressions("A AND B\nA OR B\n")?;
 ```
 
 ## grammar.pest
@@ -140,6 +159,7 @@ xnor_operator = { "XNOR" | "xnor" | "!^" }
 left_parenthesis  = { "(" }
 right_parenthesis = { ")" }
 
+// A single uppercase ASCII letter, so at most 26 distinct variables per expression.
 identifier = @{ ASCII_ALPHA_UPPER ~ !(ASCII_ALPHA_UPPER) }
 
 term       = { not_operator* ~ (identifier | left_parenthesis ~ expression ~ right_parenthesis) }
