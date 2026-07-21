@@ -3,7 +3,7 @@ use pest::iterators::Pair;
 use std::collections::{HashMap, HashSet};
 
 /// An AST node that represents a logical expression recursively.
-#[derive(Debug)]
+#[derive(Debug, Clone, PartialEq)]
 pub enum Expression {
     /// A `char` identifier.
     Identifier(char),
@@ -25,6 +25,8 @@ pub enum Expression {
 
 impl Expression {
     /// Evaluates a logical expression with given variables and return boolean.
+    ///
+    /// An identifier missing from `variables` defaults to `false` rather than erroring.
     ///
     /// # Arguments
     /// * `variables` - `HashMap<char, bool>` that maps an identifier to its boolean value.
@@ -138,8 +140,6 @@ impl Expression {
 
                 left
             }
-
-            Rule::file => Self::ast(pair.into_inner().next().unwrap()),
 
             _ => unreachable!(),
         }
