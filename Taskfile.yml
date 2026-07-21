@@ -1,0 +1,28 @@
+version: '3'
+
+tasks:
+  fmt:
+    cmds:
+      - cargo fmt --all
+
+  clippy:
+    cmds:
+      - cargo clippy -- -D warnings
+
+  test:
+    cmds:
+      - cargo test
+
+  check:
+    cmds:
+      - task: fmt
+      - task: clippy
+      - task: test
+
+  help:
+    cmds:
+      - cargo run -- help
+
+  run:
+    cmds:
+      - cargo run -- {{.CLI_ARGS}}
